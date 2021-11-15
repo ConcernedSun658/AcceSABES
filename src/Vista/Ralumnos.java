@@ -1,0 +1,367 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package Vista;
+
+import Controlador.Calumno;
+import Controlador.Conexion;
+import Modelo.Alumno;
+import Modelo.Alumnotarjeta;
+import Modelo.Carrera;
+import Modelo.Status;
+import com.panamahitek.ArduinoException;
+import com.panamahitek.PanamaHitek_Arduino;
+import java.awt.Color;
+import java.awt.Image;
+import java.awt.event.ItemEvent;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
+import java.sql.Blob;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.sql.rowset.serial.SerialBlob;
+import javax.swing.DefaultComboBoxModel;
+import javax.swing.Icon;
+import javax.swing.ImageIcon;
+import jssc.SerialPortEvent;
+import jssc.SerialPortEventListener;
+import jssc.SerialPortException;
+
+/**
+ *
+ * @author Kalas
+ */
+public class Ralumnos extends javax.swing.JPanel  {
+    PanamaHitek_Arduino arduino =new  PanamaHitek_Arduino();
+    String idtarjeta=null;
+String dato;
+
+    private SerialPortEventListener listener = new SerialPortEventListener() {
+        @Override
+        public void serialEvent(SerialPortEvent spe) {
+            try {
+                
+                if (arduino.isMessageAvailable()) {
+                  
+                    idtarjeta=arduino.printMessage();
+                    System.out.println(idtarjeta);
+                  txttarjeta.setBackground(Color.GREEN);
+                 
+                   txttarjeta.setText("Registrada");
+                   arduino.killArduinoConnection();
+                    
+                   System.out.println("entro al label");
+                }
+            } catch (SerialPortException | ArduinoException ex) {
+             txttarjeta.setBackground(Color.RED);
+                 
+                   txttarjeta.setText("Ocurrio un problema");
+            }
+        }
+
+    };
+    static DefaultComboBoxModel modelo,modelo2;
+    String matricula,nombre,apellido, telefono,tarjeta;
+    int idcarrera,idstatus,control;
+    Blob fotografia=null;
+byte[] imagen;
+Alumno alumno;
+Alumnotarjeta alumnotarjeta;
+Calumno calumno=new Calumno();
+    /**
+     * Creates new form Ralumnos
+     */
+    public Ralumnos() {
+        initComponents();
+        
+        
+               
+        try {
+           
+             arduino.arduinoRXTX("COM4", 9600, listener);
+       
+         //System.out.println(arduino.getInputBytesAvailable());
+         
+    } catch (Exception ex) {
+       // Logger.getLogger(Ralumnos.class.getName()).log(Level.SEVERE, null, ex);
+        
+    }
+        modelo = new DefaultComboBoxModel();
+        modelo2 = new DefaultComboBoxModel();
+        llena_combo_carrera();
+        llena_combo_status();
+        ImageIcon imagen = new ImageIcon("src/iconos/sn.png");
+        Icon icono= new ImageIcon(imagen.getImage().getScaledInstance(300,300,Image.SCALE_DEFAULT));
+      //  lblimagen.setIcon(icono);
+    }
+
+public void llena_combo_carrera() { // static para poder llamarlo desde el otro frame o JDialog
+    Carrera carrera;
+        System.out.println("combo");
+try {
+    modelo.removeAllElements(); // eliminamos lo elementos
+    Connection conexion = Conexion.obtener();
+    PreparedStatement consulta = conexion.prepareStatement("SELECT * FROM carrera" );
+    ResultSet rs=consulta.executeQuery();
+    while(rs.next())
+    {       
+        carrera= new Carrera(rs.getInt(1),rs.getString(2));
+        modelo.addElement(carrera);
+       
+    }
+     cbbcarrera.setModel(modelo); // seteamos el modelo y se cargan los datos
+} catch (SQLException ex) {
+    System.out.println(ex.getMessage());
+    
+}   catch (ClassNotFoundException ex) {
+        Logger.getLogger(Ralumnos.class.getName()).log(Level.SEVERE, null, ex);
+    }}
+
+public void llena_combo_status() { // static para poder llamarlo desde el otro frame o JDialog
+    Status status;
+       
+try {
+    modelo2.removeAllElements(); // eliminamos lo elementos
+    Connection conexion = Conexion.obtener();
+    PreparedStatement consulta = conexion.prepareStatement("SELECT * FROM status" );
+    ResultSet rs=consulta.executeQuery();
+    while(rs.next())
+    {       
+        status= new Status(rs.getInt(1),rs.getString(2));
+        modelo2.addElement(status);
+       
+    }
+     cbbstatus.setModel(modelo2); // seteamos el modelo y se cargan los datos
+} catch (SQLException ex) {
+    System.out.println(ex.getMessage());
+    
+}   catch (ClassNotFoundException ex) {
+        Logger.getLogger(Ralumnos.class.getName()).log(Level.SEVERE, null, ex);
+    }}
+    /**
+     * This method is called from within the constructor to initialize the form.
+     * WARNING: Do NOT modify this code. The content of this method is always
+     * regenerated by the Form Editor.
+     */
+    @SuppressWarnings("unchecked")
+    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
+    private void initComponents() {
+
+        jLabel1 = new javax.swing.JLabel();
+        txtmatricula = new javax.swing.JTextField();
+        jLabel2 = new javax.swing.JLabel();
+        txtnombre = new javax.swing.JTextField();
+        jLabel3 = new javax.swing.JLabel();
+        txtapellidos = new javax.swing.JTextField();
+        jLabel4 = new javax.swing.JLabel();
+        txttelefono = new javax.swing.JTextField();
+        jLabel5 = new javax.swing.JLabel();
+        cbbcarrera = new javax.swing.JComboBox<>();
+        jLabel6 = new javax.swing.JLabel();
+        cbbstatus = new javax.swing.JComboBox<>();
+        jButton1 = new javax.swing.JButton();
+        webcam = new JPanelWebCam.JPanelWebCam();
+        jButton2 = new javax.swing.JButton();
+        jLabel7 = new javax.swing.JLabel();
+        jLabel9 = new javax.swing.JLabel();
+        jLabel10 = new javax.swing.JLabel();
+        jButton3 = new javax.swing.JButton();
+        jLabel8 = new javax.swing.JLabel();
+        txttarjeta = new javax.swing.JLabel();
+
+        setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+
+        jLabel1.setText("Matricula:");
+        add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(230, 120, 59, 20));
+        add(txtmatricula, new org.netbeans.lib.awtextra.AbsoluteConstraints(300, 120, 230, -1));
+
+        jLabel2.setText("Nombre: ");
+        add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(230, 170, -1, -1));
+        add(txtnombre, new org.netbeans.lib.awtextra.AbsoluteConstraints(300, 160, 230, 25));
+
+        jLabel3.setText("Apellidos:");
+        add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(230, 220, -1, -1));
+        add(txtapellidos, new org.netbeans.lib.awtextra.AbsoluteConstraints(300, 210, 230, 24));
+
+        jLabel4.setText("Telefono:");
+        add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(230, 270, -1, -1));
+        add(txttelefono, new org.netbeans.lib.awtextra.AbsoluteConstraints(300, 260, 230, -1));
+
+        jLabel5.setText("Carrera");
+        add(jLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(230, 310, -1, -1));
+
+        cbbcarrera.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        cbbcarrera.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                cbbcarreraItemStateChanged(evt);
+            }
+        });
+        add(cbbcarrera, new org.netbeans.lib.awtextra.AbsoluteConstraints(300, 310, 230, -1));
+
+        jLabel6.setText("Status");
+        add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(230, 350, -1, -1));
+
+        cbbstatus.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        cbbstatus.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                cbbstatusItemStateChanged(evt);
+            }
+        });
+        add(cbbstatus, new org.netbeans.lib.awtextra.AbsoluteConstraints(300, 350, 230, -1));
+
+        jButton1.setText("Tomar foto");
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
+        add(jButton1, new org.netbeans.lib.awtextra.AbsoluteConstraints(640, 320, -1, -1));
+
+        webcam.setBorder(javax.swing.BorderFactory.createEtchedBorder());
+        webcam.setToolTipText("Da click para activar camara");
+        webcam.setFONDO(false);
+        webcam.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                webcamKeyPressed(evt);
+            }
+        });
+
+        javax.swing.GroupLayout webcamLayout = new javax.swing.GroupLayout(webcam);
+        webcam.setLayout(webcamLayout);
+        webcamLayout.setHorizontalGroup(
+            webcamLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 186, Short.MAX_VALUE)
+        );
+        webcamLayout.setVerticalGroup(
+            webcamLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 186, Short.MAX_VALUE)
+        );
+
+        add(webcam, new org.netbeans.lib.awtextra.AbsoluteConstraints(580, 110, 190, 190));
+
+        jButton2.setText("Guardar");
+        jButton2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton2ActionPerformed(evt);
+            }
+        });
+        add(jButton2, new org.netbeans.lib.awtextra.AbsoluteConstraints(400, 403, 240, 40));
+
+        jLabel7.setText("Tarjeta:");
+        add(jLabel7, new org.netbeans.lib.awtextra.AbsoluteConstraints(230, 410, -1, -1));
+
+        jLabel9.setFont(new java.awt.Font("Arial", 1, 36)); // NOI18N
+        jLabel9.setForeground(new java.awt.Color(0, 51, 153));
+        jLabel9.setText("Acce");
+        add(jLabel9, new org.netbeans.lib.awtextra.AbsoluteConstraints(350, 30, -1, -1));
+
+        jLabel10.setFont(new java.awt.Font("Arial", 1, 48)); // NOI18N
+        jLabel10.setForeground(new java.awt.Color(255, 153, 0));
+        jLabel10.setText("SABES");
+        add(jLabel10, new org.netbeans.lib.awtextra.AbsoluteConstraints(440, 20, -1, -1));
+
+        jButton3.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/Logo.png"))); // NOI18N
+        add(jButton3, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 0, 190, 270));
+
+        jLabel8.setIcon(new javax.swing.ImageIcon(getClass().getResource("/fondos/fondo1.jpg"))); // NOI18N
+        add(jLabel8, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 810, 660));
+
+        txttarjeta.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
+        txttarjeta.setOpaque(true);
+        add(txttarjeta, new org.netbeans.lib.awtextra.AbsoluteConstraints(100, 360, 97, 19));
+    }// </editor-fold>//GEN-END:initComponents
+
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+       imagen =webcam.getBytes();
+    }//GEN-LAST:event_jButton1ActionPerformed
+
+    private void webcamKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_webcamKeyPressed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_webcamKeyPressed
+
+    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+       matricula=txtmatricula.getText();
+       nombre=txtnombre.getText();
+       apellido=txtapellidos.getText();
+       telefono= txttelefono.getText();
+        Carrera cr =(Carrera)this.cbbcarrera.getSelectedItem();
+         idcarrera = cr.getIdcarrera();
+         Status st =(Status)this.cbbstatus.getSelectedItem();
+        idstatus  = st.getIdstatus();
+        tarjeta=idtarjeta;
+        try {
+            fotografia = new SerialBlob(imagen );
+        } catch (SQLException ex) {
+            Logger.getLogger(Ralumnos.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        alumno=new Alumno(matricula,nombre,apellido,telefono,idcarrera,idstatus,fotografia);
+        alumnotarjeta= new Alumnotarjeta(matricula,tarjeta);
+        try {
+            calumno.guardar(Conexion.obtener(), alumno);
+           try {
+               Thread.sleep(5*1000);
+                calumno.guardartarjeta(Conexion.obtener(), alumnotarjeta);
+           } catch (InterruptedException ex) {
+               Logger.getLogger(Ralumnos.class.getName()).log(Level.SEVERE, null, ex);
+               System.out.println("hilo");
+           }
+        } catch (SQLException ex) {
+            Logger.getLogger(Ralumnos.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (ClassNotFoundException ex) {
+            Logger.getLogger(Ralumnos.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }//GEN-LAST:event_jButton2ActionPerformed
+
+    private void cbbcarreraItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_cbbcarreraItemStateChanged
+        Carrera cr =(Carrera)this.cbbcarrera.getSelectedItem();
+        if (evt.getStateChange() == ItemEvent.SELECTED) {
+
+            int id = cr.getIdcarrera();
+            
+        }
+    }//GEN-LAST:event_cbbcarreraItemStateChanged
+
+    private void cbbstatusItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_cbbstatusItemStateChanged
+        Status st =(Status)this.cbbstatus.getSelectedItem();
+        if (evt.getStateChange() == ItemEvent.SELECTED) {
+
+            int id = st.getIdstatus();
+            
+        }
+    }//GEN-LAST:event_cbbstatusItemStateChanged
+
+
+    // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JComboBox<String> cbbcarrera;
+    private javax.swing.JComboBox<String> cbbstatus;
+    private javax.swing.JButton jButton1;
+    private javax.swing.JButton jButton2;
+    private javax.swing.JButton jButton3;
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel10;
+    private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel4;
+    private javax.swing.JLabel jLabel5;
+    private javax.swing.JLabel jLabel6;
+    private javax.swing.JLabel jLabel7;
+    private javax.swing.JLabel jLabel8;
+    private javax.swing.JLabel jLabel9;
+    private javax.swing.JTextField txtapellidos;
+    private javax.swing.JTextField txtmatricula;
+    private javax.swing.JTextField txtnombre;
+    private javax.swing.JLabel txttarjeta;
+    private javax.swing.JTextField txttelefono;
+    private JPanelWebCam.JPanelWebCam webcam;
+    // End of variables declaration//GEN-END:variables
+
+  
+
+    
+}
